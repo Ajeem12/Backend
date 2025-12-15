@@ -130,4 +130,35 @@ const deleteMovie = async (req, res) => {
   });
 };
 
-export { addMovie, updateMovie, deleteMovie };
+const getMovies = async (req, res) => {
+  const movies = await prisma.movie.findMany();
+  return res.status(200).json({
+    status: "success",
+    data: movies,
+  });
+};
+
+const getMoviesByName = async (req, res) => {
+  const { name } = req.params;
+  const movies = await prisma.movie.findMany({
+    where: {
+      title: {
+        contains: name,
+      },
+    },
+  });
+
+  if (movies.length === 0) {
+    return res.status(404).json({
+      status: "error",
+      message: "No movies found",
+    });
+  }
+
+  return res.status(200).json({
+    status: "success",
+    data: movies,
+  });
+};
+
+export { addMovie, updateMovie, deleteMovie, getMovies, getMoviesByName };
